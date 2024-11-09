@@ -6,6 +6,7 @@ pipeline {
     }
     environment {
         DOTNET_CLI_HOME = '/tmp'
+        PATH = "/root/.dotnet/tools:${env.PATH}"
     }
     stages {
         stage('Install SonarScanner') {
