@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Install SonarScanner') {
             steps {
-                sh 'dotnet tool install --global dotnet-sonarscanner'
+                sh 'dotnet tool install --global dotnet-sonarscanner --version 4.10.0'
             }
         }
         stage('Checkout Code') {
