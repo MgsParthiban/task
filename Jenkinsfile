@@ -1,21 +1,13 @@
 pipeline {
     agent {
         docker {
-            image 'parthitk/task:dotnet_build'
+            image 'parthitk/task:image2'
         }
     }
     environment {
         DOTNET_CLI_HOME = '/tmp'
-        DOTNET_TOOLS_DIR = '/tmp/.dotnet/tools' // Custom directory for tools
-        PATH = "/tmp/.dotnet/tools:${env.PATH}"
     }
     stages {
-        stage('Install SonarScanner') {
-            steps {
-                // Install SonarScanner to the specified DOTNET_TOOLS_DIR
-                sh 'dotnet tool install dotnet-sonarscanner --tool-path /tmp/.dotnet/tools --version 4.10.0'
-            }
-        }
         stage('Checkout Code') {
             steps {
                 checkout scm
