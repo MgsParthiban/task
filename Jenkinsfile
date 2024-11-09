@@ -16,7 +16,7 @@ pipeline {
         stage ('Build') {
             steps {
                 sh 'dotnet restore'
-                sh 'dotnet publish -c Release -o /app/publish'
+                sh 'dotnet publish -c Release -o out'
                 echo "Successfully built the code"
             }
         }
