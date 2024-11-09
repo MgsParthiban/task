@@ -27,7 +27,9 @@ pipeline {
           steps {
             withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
                 sh 'ls -lrt'
-              sh 'dotnet sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+              sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
+              sh 'dotnet build'
+              sh 'dotnet sonarscanner end /d:sonar.login=$SONAR_AUTH_TOKEN'
             }
           }
     }
