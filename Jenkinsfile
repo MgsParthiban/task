@@ -15,6 +15,11 @@ pipeline {
                 checkout scm  // Get the code from the repository
             }
         }
+        stage('Restore Dependencies') {
+            steps {
+                sh 'dotnet restore'  // Restore NuGet dependencies
+            }
+        }
         stage('Build and Analyze') {
             steps {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
