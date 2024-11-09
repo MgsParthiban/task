@@ -6,10 +6,13 @@ pipeline {
                 checkout scm
             }
         }
-        stage('docker build') {
+        stage ('build') {
             steps {
-                sh 'docker build -t image1 .'
-            }
+                sh 'dotnet restore'
+                sh 'dotnet publish -c Release -o /app/publish'   
+                echo "sucessfully builld the code"         }
         }
+
     }
 }    
+
