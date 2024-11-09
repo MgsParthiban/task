@@ -20,5 +20,15 @@ pipeline {
                 echo "Successfully built the code"
             }
         }
+        stage('Static Code Analysis') {
+          environment {
+            SONAR_URL = "http://65.0.180.122:9000/"
+          }
+          steps {
+            withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
+              sh 'cd d2k && dontnet sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+            }
+          }
+    }
     }
 }
