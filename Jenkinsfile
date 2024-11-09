@@ -8,6 +8,11 @@ pipeline {
         DOTNET_CLI_HOME = '/tmp'
     }
     stages {
+        stage('Install SonarScanner') {
+            steps {
+                sh 'dotnet tool install --global dotnet-sonarscanner'
+            }
+        }
         stage('Checkout Code') {
             steps {
                 checkout scm
