@@ -6,12 +6,14 @@ pipeline {
     }
     environment {
         DOTNET_CLI_HOME = '/tmp'
-        PATH = "/root/.dotnet/tools:${env.PATH}"
+        DOTNET_TOOLS_DIR = '/tmp/.dotnet/tools' // Custom directory for tools
+        PATH = "/tmp/.dotnet/tools:${env.PATH}"
     }
     stages {
         stage('Install SonarScanner') {
             steps {
-                sh 'dotnet tool install --global dotnet-sonarscanner --version 4.10.0'
+                // Install SonarScanner to the specified DOTNET_TOOLS_DIR
+                sh 'dotnet tool install dotnet-sonarscanner --tool-path /tmp/.dotnet/tools --version 4.10.0'
             }
         }
         stage('Checkout Code') {
@@ -27,17 +29,16 @@ pipeline {
             }
         }
         stage('Static Code Analysis') {
-          environment {
-            SONAR_URL = "http://65.0.180.122:9000/"
-          }
-          steps {
-            withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
-                sh 'ls -lrt'
-              sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
-              sh 'dotnet build'
-              sh 'dotnet sonarscanner end /d:sonar.login=$SONAR_AUTH_TOKEN'
+            environment {
+                SONAR_URL = "http://65.0.180.122:9000/"
             }
-          }
-    }
+            steps {
+                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
+                    sh 'dotnet build'
+                    sh 'dotnet sonarscanner end /d:sonar.login=$SONAR_AUTH_TOKEN'
+                }
+            }
+        }
     }
 }
