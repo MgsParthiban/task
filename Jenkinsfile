@@ -42,7 +42,8 @@ pipeline {
             steps {
                 script {
                     // Set the EC2 IP address based on the selected environment
-                    def ec2Ip = (params.ENVIRONMENT == 'UAT') ? "${env.UAT-EC2-IP}" : env.Production-EC2-IP
+                    //def ec2Ip = (params.ENVIRONMENT == 'UAT') ? "${env.UAT-EC2-IP}" : env.Production-EC2-IP
+                    def ec2Ip = '15.206.195.201'
                     def imageTag = "parthitk/task:${BUILD_NUMBER}"
 
                     // Use sshagent to manage the SSH key from Jenkins credentials
