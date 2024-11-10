@@ -63,7 +63,7 @@ pipeline {
             steps {
                 script {
                     if (params.ENVIRONMENT == 'UAT') {
-                        sh 'curl -f http://15.206.195.201:1010/api/hello|| exit 1'
+                        sh 'curl -f --max-time 60 http://15.206.195.201:1010/api/hello'
                     } else {
                         sh 'curl -f http://15.206.195.201:5000/ || exit 1'
                     }
