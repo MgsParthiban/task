@@ -1,12 +1,12 @@
 pipeline {
     agent {
         docker {
-            image 'parthitk/task:sonar2'  // Use your Docker image
+            image 'parthitk/task:sonar3'  // Use your Docker image
         }
     }
     environment {
         DOTNET_CLI_HOME = '/tmp'
-        PATH = "/root/.dotnet/tools:${env.PATH}"  // Ensure SonarScanner is in PATH
+        PATH = "/usr/local/bin:${env.PATH}"   // Ensure SonarScanner is in PATH
         SONAR_URL = "http://3.109.216.229:9000/"  // SonarQube server URL
     }
     stages {
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
                     // Step 1: Begin SonarQube analysis
-                    sh 'chmod +x /root/.dotnet/tools/dotnet-sonarscanner'
+                    sh 'ls -l /root/.dotnet/tools'
                     sh 'dotnet tool list -g'
                     sh 'dotnet-sonarscanner --version'
                     sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
