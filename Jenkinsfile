@@ -59,7 +59,7 @@ pipeline {
             }
         }
 
-       /*  stage('Health Check') {
+        stage('Health Check') {
             steps {
                 script {
                     if (params.ENVIRONMENT == 'UAT') {
@@ -69,7 +69,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
     }
 }
 
