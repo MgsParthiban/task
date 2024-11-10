@@ -21,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("dotnet-hello-world:${BUILD_NUMBER}")
+                    docker.build("parthitk/task:${BUILD_NUMBER}")
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("dotnet-hello-world:${BUILD_NUMBER}").push()
+                        docker.image("parthitk/task:${BUILD_NUMBER}").push()
                     }
                 }
             }
