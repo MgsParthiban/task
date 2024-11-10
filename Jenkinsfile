@@ -51,7 +51,7 @@ pipeline {
                         sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${ec2Ip} "
                             docker pull ${imageTag} &&
-                            docker run -d -p 5000:5000 ${imageTag}
+                            docker run -d -p 1010:5000 ${imageTag}
                         "
                         """
                     }
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 script {
                     if (params.ENVIRONMENT == 'UAT') {
-                        sh 'curl -f http://15.206.195.201:5000/api/hello|| exit 1'
+                        sh 'curl -f http://15.206.195.201:1010/api/hello|| exit 1'
                     } else {
                         sh 'curl -f http://15.206.195.201:5000/ || exit 1'
                     }
