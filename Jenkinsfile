@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'parthitk/task:sonar3'  // Use your Docker image
+            image 'parthitk/task:sonar4'  // Use your Docker image
         }
     }
     environment {
@@ -25,9 +25,10 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
                     // Step 1: Begin SonarQube analysis
                    
-                    sh 'ls -l /root/.dotnet/tools'
+                    sh 'ls -l /usr/local/bin'
+'
                     
-                    sh 'dotnet tool list -g'
+                    //sh 'dotnet tool list -g'
                     sh 'dotnet-sonarscanner --version'
                     sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
 
