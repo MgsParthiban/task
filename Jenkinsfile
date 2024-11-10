@@ -24,7 +24,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
                     // Step 1: Begin SonarQube analysis
-                    sh 'whoami'
+                   
                     sh 'ls -l /root/.dotnet/tools'
                     
                     sh 'dotnet tool list -g'
