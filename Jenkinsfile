@@ -1,13 +1,13 @@
 pipeline {
     agent {
         docker {
-            image 'parthitk/task:image3'  // Use your Docker image
+            image 'parthitk/task:sonar'  // Use your Docker image
         }
     }
     environment {
         DOTNET_CLI_HOME = '/tmp'
         PATH = "/root/.dotnet/tools:${env.PATH}"  // Ensure SonarScanner is in PATH
-        SONAR_URL = "http://65.0.180.122:9000/"  // SonarQube server URL
+        SONAR_URL = "http://3.109.216.229:9000/"  // SonarQube server URL
     }
     stages {
         stage('Checkout Code') {
