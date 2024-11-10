@@ -28,8 +28,10 @@ pipeline {
                     sh 'ls -l /usr/local/bin'
                     
                     //sh 'dotnet tool list -g'
-                    sh 'dotnet-sonarscanner --version'
-                    sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
+                    //sh 'dotnet-sonarscanner --version'
+                    sh 'dotnet-sonarscanner /?' 
+                    //sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
+                    sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL  /d:sonar.login=$SONAR_AUTH_TOKEN'
 
                     // Step 2: Build the .NET project
                     sh 'dotnet build'
