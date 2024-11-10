@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'parthitk/task:sonar'  // Use your Docker image
+            image 'parthitk/task:sonar2'  // Use your Docker image
         }
     }
     environment {
