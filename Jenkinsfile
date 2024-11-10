@@ -26,7 +26,6 @@ pipeline {
                     // Step 1: Begin SonarQube analysis
                    
                     sh 'ls -l /usr/local/bin'
-'
                     
                     //sh 'dotnet tool list -g'
                     sh 'dotnet-sonarscanner --version'
