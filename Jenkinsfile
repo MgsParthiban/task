@@ -6,6 +6,8 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub')
         AWS_CREDENTIALS = credentials('aws-credentials-id')
         EC2_CREDENTIALS = credentials('aws_ssh')
+        LB_DNS = 'my-app-lb-1199252903.ap-south-1.elb.amazonaws.com' 
+        HEALTH_CHECK_URL = "http://${LB_DNS}:80/api/hello" 
     }
 
     parameters {
@@ -62,10 +64,19 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
-                    if (params.ENVIRONMENT == 'UAT') {
-                        sh 'curl -f --max-time 60 http://mylb-1291185372.ap-south-1.elb.amazonaws.com/'
+                    // Wait a bit to give the app time to start
+                    sleep(time: 30, unit: 'SECONDS')
+
+                    // Perform the health check using curl
+                    def result = sh(script: """
+                        curl -f ${HEALTH_CHECK_URL}
+                    """, returnStatus: true)
+
+                    // If the result is not successful, mark the build as failed
+                    if (result != 0) {
+                        error "Health check failed!"
                     } else {
-                        sh 'curl -f http://15.206.195.201:5000/ || exit 1'
+                        echo "Health check passed!"
                     }
                 }
             }
