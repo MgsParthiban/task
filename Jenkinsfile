@@ -1,46 +1,72 @@
 pipeline {
-    agent {
-        docker {
-            image 'parthitk/task:sonar4'  // Use your Docker image
-        }
-    }
+    agent any
+
     environment {
-        DOTNET_CLI_HOME = '/tmp'
-        PATH = "/usr/local/bin:${env.PATH}"   // Ensure SonarScanner is in PATH
-        SONAR_URL = "http://3.109.216.229:9000/"  // SonarQube server URL
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub')
+        AWS_CREDENTIALS = credentials('aws-credentials-id')
+        EC2_CREDENTIALS = credentials('aws_ssh')
     }
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['UAT', 'Production'], description: 'Choose the environment to deploy to')
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Clone Code') {
             steps {
-                checkout scm  // Get the code from the repository
+                echo "scm checkout"
             }
         }
-        stage('Restore Dependencies') {
-            steps {
-                sh 'dotnet restore'  // Restore NuGet dependencies
-            }
-        }
-        stage('Build and Analyze') {
-            steps {
-                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_AUTH_TOKEN')]) {
-                    // Step 1: Begin SonarQube analysis
-                   
-                    sh 'ls -l /usr/local/bin'
-                    
-                    //sh 'dotnet tool list -g'
-                    //sh 'dotnet-sonarscanner --version'
-                    sh 'dotnet-sonarscanner /?' 
-                    //sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL /d:sonar.login=$SONAR_AUTH_TOKEN'
-                    sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL  /d:sonar.login=$SONAR_AUTH_TOKEN'
-                    //sh 'dotnet sonarscanner begin /k:"myapp" /d:sonar.host.url=$SONAR_URL  /d:sonar.login=$SONAR_AUTH_TOKEN'
 
-                    // Step 2: Build the .NET project
-                    sh 'dotnet build'
-
-                    // Step 3: End SonarQube analysis and submit results
-                    sh 'dotnet sonarscanner end /d:sonar.login=$SONAR_AUTH_TOKEN'
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("dotnet-hello-world:${BUILD_NUMBER}")
                 }
             }
         }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                        docker.image("dotnet-hello-world:${BUILD_NUMBER}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    // Set the EC2 IP address based on the selected environment
+                    def ec2Ip = (params.ENVIRONMENT == 'UAT') ? 'UAT-EC2-IP' : 'Production-EC2-IP'
+                    def imageTag = "parthitk/dotnet-hello-world:${BUILD_NUMBER}"
+
+                    // Use sshagent to manage the SSH key from Jenkins credentials
+                    sshagent(credentials: ['aws_ssh']) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${ec2Ip} "
+                            docker pull ${imageTag} &&
+                            docker run -d -p 5000:5000 ${imageTag}
+                        "
+                        """
+                    }
+                }
+            }
+        }
+
+       /*  stage('Health Check') {
+            steps {
+                script {
+                    if (params.ENVIRONMENT == 'UAT') {
+                        sh 'curl -f http://UAT-EC2-IP:5000/ || exit 1'
+                    } else {
+                        sh 'curl -f http://Production-EC2-IP:5000/ || exit 1'
+                    }
+                }
+            }
+        }*/
     }
 }
+
