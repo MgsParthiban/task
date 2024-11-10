@@ -63,9 +63,9 @@ pipeline {
             steps {
                 script {
                     if (params.ENVIRONMENT == 'UAT') {
-                        sh 'curl -f http://UAT-EC2-IP:5000/ || exit 1'
+                        sh 'curl -f http://15.206.195.201:5000/ || exit 1'
                     } else {
-                        sh 'curl -f http://Production-EC2-IP:5000/ || exit 1'
+                        sh 'curl -f http://15.206.195.201:5000/ || exit 1'
                     }
                 }
             }
